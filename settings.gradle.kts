@@ -21,3 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "PixelPost"
 include(":app")
+include(":core")
+include(":feature")
+include(":feature:auth")
