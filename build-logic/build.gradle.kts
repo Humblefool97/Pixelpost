@@ -16,6 +16,7 @@
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.compose) apply false
 }
 
 group = "com.pixelpost.buildlogic"

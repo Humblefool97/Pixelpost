@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.pixelpost.android.feature)
     alias(libs.plugins.pixelpost.android.firebase.auth)
     alias(libs.plugins.pixelpost.kotlin.parcelize)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.pixelpost.android.library.compose)
 }
 
 android {
