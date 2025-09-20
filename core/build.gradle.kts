@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.pixelpost.android.library)
+    alias(libs.plugins.pixelpost.kotlin.parcelize)
 }
 
 android {

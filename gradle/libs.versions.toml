@@ -41,6 +41,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-auth = {group = "com.google.firebase",name = "firebase-auth"}
 
 # Gradle plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -56,6 +57,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
 gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
@@ -67,4 +69,6 @@ pixelpost-android-feature = { id = "pixelpost.android.feature", version = "unspe
 pixelpost-android-application-compose = { id = "pixelpost.android.application.compose", version = "unspecified" }
 pixelpost-android-library-compose = { id = "pixelpost.android.library.compose", version = "unspecified" }
 pixelpost-android-application-firebase = { id = "pixelpost.android.application.firebase", version = "unspecified" }
+pixelpost-android-firebase-auth = { id = "pixelpost.android.firebase.auth", version = "unspecified" }
+pixelpost-kotlin-parcelize = { id = "pixelpost.kotlin.parcelize", version = "unspecified" }
 
