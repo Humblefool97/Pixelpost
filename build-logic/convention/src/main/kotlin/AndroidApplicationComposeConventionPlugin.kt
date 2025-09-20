@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-    }
-}
+import com.android.build.api.dsl.ApplicationExtension
+import com.pixelpost.configureAndroidCompose
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.getByType
 
-dependencyResolutionManagement {
-    repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
-    }
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
+class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target) {
+            apply(plugin = "com.android.application")
+            apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+
+            val extension = extensions.getByType<ApplicationExtension>()
+            configureAndroidCompose(extension)
         }
     }
 }
-
-rootProject.name = "build-logic"
-include(":convention")
-

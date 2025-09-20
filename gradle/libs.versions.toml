@@ -1,12 +1,23 @@
 [versions]
 agp = "8.12.0"
-kotlin = "2.0.21"
+kotlin = "2.1.10"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
+androidTools = "31.9.0"
+# Compose
+androidxComposeBom = "2025.02.00"
+androidxActivity = "1.9.3"
+androidxLifecycle = "2.8.7"
+androidxNavigation = "2.8.5"
+# Firebase
+firebaseBom = "33.7.0"
+firebaseCrashlyticsPlugin = "3.0.2"
+firebasePerfPlugin = "1.4.2"
+gmsPlugin = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -16,8 +27,44 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
+# Compose libraries
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "androidxComposeBom" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
+androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
+
+# Firebase libraries
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+
+# Gradle plugins
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
+firebase-performance-gradlePlugin = { group = "com.google.firebase", name = "perf-plugin", version.ref = "firebasePerfPlugin" }
+gms-gradlePlugin = { group = "com.google.gms", name = "google-services", version.ref = "gmsPlugin" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfPlugin" }
+gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
+
+# PixelPost convention plugins
+pixelpost-android-application = { id = "pixelpost.android.application", version = "unspecified" }
+pixelpost-android-library = { id = "pixelpost.android.library", version = "unspecified" }
+pixelpost-android-feature = { id = "pixelpost.android.feature", version = "unspecified" }
+pixelpost-android-application-compose = { id = "pixelpost.android.application.compose", version = "unspecified" }
+pixelpost-android-library-compose = { id = "pixelpost.android.library.compose", version = "unspecified" }
+pixelpost-android-application-firebase = { id = "pixelpost.android.application.firebase", version = "unspecified" }
 
