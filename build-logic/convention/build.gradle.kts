@@ -29,8 +29,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-kotlin {
-    compilerOptions {
+kotlin {    compilerOptions {
+
         jvmTarget = JvmTarget.JVM_21
     }
 }

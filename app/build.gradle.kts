@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.pixelpost.android.application)
+    alias(libs.plugins.pixelpost.android.application.compose)
     alias(libs.plugins.gms)
 }
 

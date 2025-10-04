@@ -7,6 +7,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
+androidxMaterial3 = "1.2.1"
 androidTools = "31.9.0"
 # Compose
 androidxComposeBom = "2025.02.00"
@@ -26,6 +27,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxMaterial3" }
 
 # Compose libraries
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "androidxComposeBom" }
@@ -71,4 +73,3 @@ pixelpost-android-library-compose = { id = "pixelpost.android.library.compose", 
 pixelpost-android-application-firebase = { id = "pixelpost.android.application.firebase", version = "unspecified" }
 pixelpost-android-firebase-auth = { id = "pixelpost.android.firebase.auth", version = "unspecified" }
 pixelpost-kotlin-parcelize = { id = "pixelpost.kotlin.parcelize", version = "unspecified" }
-
