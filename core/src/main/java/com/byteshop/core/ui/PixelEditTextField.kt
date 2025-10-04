@@ -1,4 +1,4 @@
-package com.byteshop.core
+package com.byteshop.core.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -24,6 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * TODO:// Replace with theme
+ */
 @Composable
 fun PixelEditTextField(
     modifier: Modifier = Modifier,
@@ -50,6 +54,7 @@ fun PixelEditTextField(
             color = Color.Black,
             fontSize = 14.sp
         ),
+        cursorBrush = SolidColor(Color.Black),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         decorationBox = { innerTextField ->
             Box(
