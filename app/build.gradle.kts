@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.pixelpost.android.application)
     alias(libs.plugins.pixelpost.android.application.compose)
+    alias(libs.plugins.pixelpost.android.application.firebase)
     alias(libs.plugins.gms)
 }
 
@@ -15,4 +16,6 @@ dependencies {
     // Module dependencies
     implementation(projects.core)
     implementation(projects.feature.auth)
+    //Dependency for compose navigation
+    implementation(libs.androidx.navigation.compose)
 }
