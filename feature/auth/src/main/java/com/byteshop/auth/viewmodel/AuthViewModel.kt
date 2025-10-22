@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 
 
 internal sealed interface AuthViewState {
+    object Idle : AuthViewState
     object Loading : AuthViewState
     data class Authenticated(val user: User) : AuthViewState
     object Unauthenticated : AuthViewState
@@ -27,7 +28,7 @@ data class AuthFormState(
 )
 
 internal class AuthViewModel : ViewModel() {
-    private val _viewState = MutableStateFlow<AuthViewState>(AuthViewState.Loading)
+    private val _viewState = MutableStateFlow<AuthViewState>(AuthViewState.Idle)
     val viewState = _viewState.asStateFlow()
     private val _formState = MutableStateFlow(AuthFormState())
     val formState = _formState.asStateFlow()
@@ -49,7 +50,7 @@ internal class AuthViewModel : ViewModel() {
             }
     }
 
-    fun onUsernameChange(value:String){
+    fun onUsernameChange(value: String) {
         //Validate
         val result = AuthValidator.validateUsernameOrEmailOrPhone(value)
         _formState.update {
@@ -61,7 +62,7 @@ internal class AuthViewModel : ViewModel() {
         }
     }
 
-    fun onPasswordChange(value: String){
+    fun onPasswordChange(value: String) {
         //Validate
         val result = AuthValidator.validatePassword(value)
         _formState.update {

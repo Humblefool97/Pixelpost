@@ -24,7 +24,7 @@ import com.byteshop.auth.viewmodel.AuthViewModel
 import com.byteshop.core.ui.components.PixelEditTextField
 import com.byteshop.core.ui.components.PixelPostOutlineButton
 import com.byteshop.core.ui.components.PixelPrimaryButton
-import com.byteshop.core.R as CoreResource
+import com.byteshop.core.ui.R as CoreUiResource
 
 @Composable
 internal fun AuthScreen(
@@ -49,7 +49,10 @@ internal fun AuthScreen(
                 onUsernameChange = viewModel::onUsernameChange,
                 onPasswordChange = viewModel::onPasswordChange,
                 onLoginClick = {
-                    // TODO: Call viewModel.authenticateUser()
+                    viewModel.authenticateUser(
+                        email = formState.usernameOrEmailOrPhone,
+                        password = formState.password
+                    )
                 }
             )
             Footer(
@@ -76,7 +79,7 @@ private fun Body(
     ) {
         //Icon
         Image(
-            painter = painterResource(id = CoreResource.drawable.vc_pp_auth_icon_small),
+            painter = painterResource(id = CoreUiResource.drawable.vc_pp_auth_icon_small),
             contentDescription = "App icon",
             modifier = Modifier
                 .size(40.dp),
@@ -109,7 +112,7 @@ private fun Body(
         Spacer(
             modifier = Modifier.size(8.dp)
         )
-        
+
         // ✅ Button enabled based on form validation
         PixelPrimaryButton(
             modifier = Modifier.fillMaxWidth(),

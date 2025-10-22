@@ -1,8 +1,5 @@
 plugins {
     alias(libs.plugins.pixelpost.android.library)
-    alias(libs.plugins.pixelpost.kotlin.parcelize)
-    alias(libs.plugins.pixelpost.android.library.compose)
-
 }
 
 android {
@@ -10,5 +7,6 @@ android {
 }
 
 dependencies {
-    // Additional dependencies specific to core module can be added here
+    // Core module is now empty - UI components moved to core:ui
+    // This module can be used for common utilities, extensions, etc.
 }

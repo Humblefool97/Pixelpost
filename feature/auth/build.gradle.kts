@@ -14,7 +14,7 @@ android {
 
 dependencies {
     // Feature module dependencies
-    implementation(projects.core)
+    implementation(projects.core.ui)
     //Dependency for compose navigation
     implementation(libs.androidx.navigation.compose)
 
