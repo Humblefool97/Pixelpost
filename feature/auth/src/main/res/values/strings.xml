@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_email">Invalid email format</string>
+    <string name="error_invalid_phone">Invalid phone number</string>
+    <string name="error_username_too_short">Username is too short</string>
+    <string name="error_username_too_long">Username is too long (max 30 characters)</string>
+    <string name="error_username_invalid_chars">Only letters, numbers, dots and underscores allowed</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_password_too_long">Password is too long</string>
+</resources>

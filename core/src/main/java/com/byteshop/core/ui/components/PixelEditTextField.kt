@@ -1,4 +1,4 @@
-package com.byteshop.core.ui
+package com.byteshop.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

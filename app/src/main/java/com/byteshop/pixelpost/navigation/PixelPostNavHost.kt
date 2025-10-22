@@ -17,7 +17,7 @@ fun PixelPostNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination
-    ){
+    ) {
         authScreen(
             modifier = modifier,
             onAuthSuccess = {

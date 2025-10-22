@@ -1,4 +1,4 @@
-package com.byteshop.core.ui
+package com.byteshop.core.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Button

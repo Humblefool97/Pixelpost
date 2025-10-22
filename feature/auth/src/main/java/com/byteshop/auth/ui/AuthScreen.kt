@@ -4,29 +4,36 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.byteshop.core.ui.PixelEditTextField
-import com.byteshop.core.ui.PixelPostOutlineButton
-import com.byteshop.core.ui.PixelPrimaryButton
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.byteshop.auth.viewmodel.AuthViewModel
+import com.byteshop.core.ui.components.PixelEditTextField
+import com.byteshop.core.ui.components.PixelPostOutlineButton
+import com.byteshop.core.ui.components.PixelPrimaryButton
 import com.byteshop.core.R as CoreResource
 
 @Composable
 internal fun AuthScreen(
     modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = viewModel(),
     onAuthSuccess: () -> Unit = {},
 ) {
+    // ✅ Collect state from ViewModel
+    val formState by viewModel.formState.collectAsStateWithLifecycle()
 
     Surface(
         modifier = Modifier.padding(16.dp)
@@ -35,7 +42,15 @@ internal fun AuthScreen(
             Body(
                 modifier = modifier
                     .align(Alignment.TopCenter)
-                    .fillMaxHeight(0.8f)
+                    .fillMaxHeight(0.8f),
+                username = formState.usernameOrEmailOrPhone,
+                password = formState.password,
+                isFormValid = formState.isFormValid,
+                onUsernameChange = viewModel::onUsernameChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onLoginClick = {
+                    // TODO: Call viewModel.authenticateUser()
+                }
             )
             Footer(
                 modifier = Modifier.align(alignment = Alignment.BottomCenter)
@@ -47,7 +62,13 @@ internal fun AuthScreen(
 
 @Composable
 private fun Body(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    username: String,
+    password: String,
+    isFormValid: Boolean,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit
 ) {
     Column(
         modifier = modifier.wrapContentSize(),
@@ -66,28 +87,35 @@ private fun Body(
             modifier = Modifier.size(54.dp)
         )
 
+        // ✅ Value comes from ViewModel state
         PixelEditTextField(
             placeholderString = "Username, email address, or phone number",
-            value = "",
-            onValueChange = {},
+            value = username,
+            onValueChange = onUsernameChange,
         )
         //Spacer
         Spacer(
             modifier = Modifier.size(8.dp)
         )
+
+        // ✅ Value comes from ViewModel state
         PixelEditTextField(
             placeholderString = "Password",
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = onPasswordChange,
+            isPassword = true
         )
         //Spacer
         Spacer(
             modifier = Modifier.size(8.dp)
         )
+        
+        // ✅ Button enabled based on form validation
         PixelPrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Log in",
-            onClick = {}
+            onClick = onLoginClick,
+            enabled = isFormValid
         )
     }
 }
@@ -114,7 +142,14 @@ private fun Footer(
 )
 @Composable
 fun BodyPreview() {
-    Body()
+    Body(
+        username = "",
+        password = "",
+        isFormValid = false,
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onLoginClick = {}
+    )
 }
 
 @Preview(
