@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -21,19 +24,43 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byteshop.auth.viewmodel.AuthViewModel
+import com.byteshop.auth.viewmodel.AuthViewState
 import com.byteshop.core.ui.components.PixelEditTextField
 import com.byteshop.core.ui.components.PixelPostOutlineButton
 import com.byteshop.core.ui.components.PixelPrimaryButton
+import com.byteshop.core.ui.components.PixelPrimaryLoadingIndicatorButton
 import com.byteshop.core.ui.R as CoreUiResource
 
 @Composable
 internal fun AuthScreen(
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = viewModel(),
+    viewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory()),
     onAuthSuccess: () -> Unit = {},
 ) {
     // ✅ Collect state from ViewModel
     val formState by viewModel.formState.collectAsStateWithLifecycle()
+    val authState by viewModel.viewState.collectAsStateWithLifecycle()
+
+    var shouldShowProgress by remember { mutableStateOf(false) }
+    when (authState) {
+        is AuthViewState.Loading -> {
+            shouldShowProgress = true
+        }
+
+        is AuthViewState.Authenticated -> {
+            shouldShowProgress = false
+            //TODO: Should move to home
+        }
+
+        is AuthViewState.Unauthenticated -> {
+            //TODO: Log and display error
+        }
+
+        is AuthViewState.Idle -> {
+            //DO Nothing
+        }
+
+    }
 
     Surface(
         modifier = Modifier.padding(16.dp)
@@ -53,7 +80,8 @@ internal fun AuthScreen(
                         email = formState.usernameOrEmailOrPhone,
                         password = formState.password
                     )
-                }
+                },
+                shouldShowProgress = shouldShowProgress
             )
             Footer(
                 modifier = Modifier.align(alignment = Alignment.BottomCenter)
@@ -71,7 +99,8 @@ private fun Body(
     isFormValid: Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    shouldShowProgress: Boolean = false
 ) {
     Column(
         modifier = modifier.wrapContentSize(),
@@ -114,11 +143,12 @@ private fun Body(
         )
 
         // ✅ Button enabled based on form validation
-        PixelPrimaryButton(
+        PixelPrimaryLoadingIndicatorButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Log in",
             onClick = onLoginClick,
-            enabled = isFormValid
+            enabled = isFormValid,
+            showProgress = shouldShowProgress
         )
     }
 }

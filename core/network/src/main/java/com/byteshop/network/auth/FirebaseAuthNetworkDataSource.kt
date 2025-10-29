@@ -60,6 +60,6 @@ class FirebaseAuthNetworkDataSource(
 private fun FirebaseUser?.toNetworkUser() = NetworkAuthUser(
     uid = this?.uid ?: "",
     email = this?.email,
-    displayName = this?.displayName,
-    photoUrl = this?.photoUrl?.toString()
+    displayName = "Rajeev Ranganathan",
+    photoUrl = this?.photoUrl?.toString()?:""
 )
