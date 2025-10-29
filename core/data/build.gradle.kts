@@ -34,6 +34,8 @@ android {
 
 dependencies {
     implementation(projects.core.network)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
 
