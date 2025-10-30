@@ -1,5 +1,6 @@
 package com.byteshop.core.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.byteshop.core.ui.theme.PixelPostTheme
 
 @Composable
 fun PixelPrimaryButton(
@@ -28,14 +30,13 @@ fun PixelPrimaryButton(
         modifier = modifier,
         onClick = onClick,
         enabled = enabled,
-        colors = ButtonDefaults
-            .buttonColors()
-            .copy(
-                containerColor = Color(0XFF0195F7),
-                contentColor = Color.White
-            ),
-
-        ) {
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+    ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium
@@ -66,7 +67,7 @@ fun PixelPrimaryLoadingIndicatorButton(
                 modifier = Modifier
                     .size(16.dp)
                     .align(Alignment.Center),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.dp,
             )
     }
@@ -86,7 +87,10 @@ fun PixelPostOutlineButton(
         enabled = enabled,
         border = BorderStroke(
             width = 1.dp,
-            color = Color(0xFF0095F6)
+            color = MaterialTheme.colorScheme.primary
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {
         Text(
@@ -138,4 +142,24 @@ fun PixelPostLoadingIndicatorButtonPreview() {
         onClick = {},
         showProgress = true
     )
+}
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun PixelPrimaryButtonPreview() {
+    PixelPostTheme {
+        PixelPrimaryButton(
+            modifier = Modifier,
+            text = "Primary Button",
+            onClick = {}
+        )
+    }
 }
