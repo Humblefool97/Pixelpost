@@ -40,10 +40,10 @@ internal class AuthViewModel(
     private val authRepository: AuthRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    
+
     private val _viewState = MutableStateFlow<AuthViewState>(AuthViewState.Idle)
     val viewState = _viewState.asStateFlow()
-    
+
     // Initialize form state from SavedStateHandle for process death recovery
     private val _formState = MutableStateFlow(
         AuthFormState(
@@ -82,14 +82,14 @@ internal class AuthViewModel(
     fun onUsernameChange(value: String) {
         // Save to SavedStateHandle for process death recovery
         savedStateHandle[KEY_USERNAME] = value
-        
+
         // Validate
         val result = AuthValidator.validateUsernameOrEmailOrPhone(value)
         _formState.update {
             it.copy(
                 usernameOrEmailOrPhone = value,
                 usernameOrEmailOrPhoneError = if (result is ValidationResult.Error) result.error else null,
-                isFormValid = result is ValidationResult.Success && it.passwordError == null
+                isFormValid = result is ValidationResult.Success && it.passwordError == null && it.password.isNotEmpty()
             )
         }
     }
@@ -97,14 +97,14 @@ internal class AuthViewModel(
     fun onPasswordChange(value: String) {
         // Save to SavedStateHandle for process death recovery
         savedStateHandle[KEY_PASSWORD] = value
-        
+
         // Validate
         val result = AuthValidator.validatePassword(value)
         _formState.update {
             it.copy(
                 password = value,
                 passwordError = if (result is ValidationResult.Error) result.error else null,
-                isFormValid = result is ValidationResult.Success && it.usernameOrEmailOrPhoneError == null
+                isFormValid = result is ValidationResult.Success && it.usernameOrEmailOrPhoneError == null && it.usernameOrEmailOrPhone.isNotEmpty()
             )
         }
     }
@@ -113,11 +113,11 @@ internal class AuthViewModel(
         // State restoration keys
         private const val KEY_USERNAME = "username"
         private const val KEY_PASSWORD = "password"
-        
+
         /**
          * Factory for creating AuthViewModel instances using modern Android practices.
          * Uses the viewModelFactory DSL for cleaner, more idiomatic code.
-         * 
+         *
          * This builds the dependency chain:
          * FirebaseAuthNetworkDataSource -> DefaultAuthRepository -> AuthViewModel
          */
@@ -126,7 +126,8 @@ internal class AuthViewModel(
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val repository = authRepository ?: run {
-                    val authNetworkDataSource = FirebaseAuthNetworkDataSource.getInstance(Dispatchers.IO)
+                    val authNetworkDataSource =
+                        FirebaseAuthNetworkDataSource.getInstance(Dispatchers.IO)
                     DefaultAuthRepository.getInstance(
                         authNetworkDataSource = authNetworkDataSource,
                         dispatcher = Dispatchers.IO

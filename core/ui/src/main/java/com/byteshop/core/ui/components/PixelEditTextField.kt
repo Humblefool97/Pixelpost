@@ -65,7 +65,7 @@ fun PixelEditTextField(
                 if (value.isEmpty()) {
                     Text(
                         text = placeholderString,
-                        color = Color(0xFF999999),
+                        color = Color(MaterialTheme.colorScheme.onSurface.value),
                         fontSize = 14.sp
                     )
                 }

@@ -24,7 +24,8 @@ fun PixelPrimaryButton(
     modifier: Modifier,
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    showProgress: Boolean = false
 ) {
     Button(
         modifier = modifier,
@@ -37,10 +38,11 @@ fun PixelPrimaryButton(
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium
-        )
+        if (!showProgress)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium
+            )
     }
 }
 
@@ -59,7 +61,8 @@ fun PixelPrimaryLoadingIndicatorButton(
             modifier = modifier,
             text = text,
             onClick = onClick,
-            enabled = enabled
+            enabled = enabled,
+            showProgress = showProgress
         )
 
         if (showProgress)
@@ -143,6 +146,7 @@ fun PixelPostLoadingIndicatorButtonPreview() {
         showProgress = true
     )
 }
+
 @Preview(
     name = "Light Mode",
     showBackground = true,
