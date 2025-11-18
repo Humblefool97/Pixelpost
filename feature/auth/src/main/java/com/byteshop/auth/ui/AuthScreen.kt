@@ -5,13 +5,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -21,22 +26,49 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byteshop.auth.viewmodel.AuthViewModel
+import com.byteshop.auth.viewmodel.AuthViewState
 import com.byteshop.core.ui.components.PixelEditTextField
 import com.byteshop.core.ui.components.PixelPostOutlineButton
 import com.byteshop.core.ui.components.PixelPrimaryButton
-import com.byteshop.core.R as CoreResource
+import com.byteshop.core.ui.components.PixelPrimaryLoadingIndicatorButton
+import com.byteshop.core.ui.R as CoreUiResource
 
 @Composable
 internal fun AuthScreen(
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = viewModel(),
+    viewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory()),
     onAuthSuccess: () -> Unit = {},
 ) {
     // ✅ Collect state from ViewModel
     val formState by viewModel.formState.collectAsStateWithLifecycle()
+    val authState by viewModel.viewState.collectAsStateWithLifecycle()
+
+    var shouldShowProgress by remember { mutableStateOf(false) }
+    when (authState) {
+        is AuthViewState.Loading -> {
+            shouldShowProgress = true
+        }
+
+        is AuthViewState.Authenticated -> {
+            shouldShowProgress = false
+            //TODO: Should move to home
+        }
+
+        is AuthViewState.Unauthenticated -> {
+            //TODO: Log and display error
+        }
+
+        is AuthViewState.Idle -> {
+            //DO Nothing
+        }
+
+    }
 
     Surface(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        color = MaterialTheme.colorScheme.background
     ) {
         Box {
             Body(
@@ -49,8 +81,12 @@ internal fun AuthScreen(
                 onUsernameChange = viewModel::onUsernameChange,
                 onPasswordChange = viewModel::onPasswordChange,
                 onLoginClick = {
-                    // TODO: Call viewModel.authenticateUser()
-                }
+                    viewModel.authenticateUser(
+                        email = formState.usernameOrEmailOrPhone,
+                        password = formState.password
+                    )
+                },
+                shouldShowProgress = shouldShowProgress
             )
             Footer(
                 modifier = Modifier.align(alignment = Alignment.BottomCenter)
@@ -68,7 +104,8 @@ private fun Body(
     isFormValid: Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    shouldShowProgress: Boolean = false
 ) {
     Column(
         modifier = modifier.wrapContentSize(),
@@ -76,7 +113,7 @@ private fun Body(
     ) {
         //Icon
         Image(
-            painter = painterResource(id = CoreResource.drawable.vc_pp_auth_icon_small),
+            painter = painterResource(id = CoreUiResource.drawable.vc_pp_auth_icon_small),
             contentDescription = "App icon",
             modifier = Modifier
                 .size(40.dp),
@@ -109,13 +146,14 @@ private fun Body(
         Spacer(
             modifier = Modifier.size(8.dp)
         )
-        
+
         // ✅ Button enabled based on form validation
-        PixelPrimaryButton(
+        PixelPrimaryLoadingIndicatorButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Log in",
             onClick = onLoginClick,
-            enabled = isFormValid
+            enabled = isFormValid,
+            showProgress = shouldShowProgress
         )
     }
 }

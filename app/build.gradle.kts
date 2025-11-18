@@ -14,7 +14,7 @@ android {
  
 dependencies {
     // Module dependencies
-    implementation(projects.core)
+    implementation(projects.core.ui)
     implementation(projects.feature.auth)
     //Dependency for compose navigation
     implementation(libs.androidx.navigation.compose)

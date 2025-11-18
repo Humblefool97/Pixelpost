@@ -1,0 +1,216 @@
+# Pixelpost Project - AI Development Rules
+
+## Reference Project
+**IMPORTANT**: Always refer to the "Now in Android" (nowinandroid) project located at `/Users/rranganatha/Documents/learn/Android/nowinandroid` as the architectural and best practices reference for this project.
+
+Before suggesting any architectural changes, API implementations, or code patterns, review the corresponding implementation in the nowinandroid project first.
+
+## Architecture Guidelines
+
+### Follow Official Android Architecture
+- Strictly follow the [official Android architecture guidance](https://developer.android.com/jetpack/guide)
+- Implement a three-layer architecture:
+  1. **Data Layer**: Repositories, data sources, and models (offline-first approach)
+  2. **Domain Layer**: Use cases for business logic
+  3. **UI Layer**: ViewModels and Compose UI
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/docs/ArchitectureLearningJourney.md`
+
+### Data Layer Principles
+- **Offline-First**: Local storage (Room) is the source of truth
+- **Reactive Programming**: Expose data as Kotlin Flows, not snapshots
+- **Repository Pattern**: Repositories are the only public API for data access
+- **Data Synchronization**: Use WorkManager for background sync with exponential backoff
+- **Model Separation**: Keep database models internal, expose public models to other layers
+- Reference implementations in: `/Users/rranganatha/Documents/learn/Android/nowinandroid/core/data/`
+
+### Domain Layer Principles
+- Use cases should have a single `operator fun invoke()` method
+- Combine and transform data from multiple repositories
+- Keep business logic out of ViewModels
+- Reference implementations in: `/Users/rranganatha/Documents/learn/Android/nowinandroid/core/domain/`
+
+### UI Layer Principles
+- **Unidirectional Data Flow (UDF)**: Events flow down, data flows up
+- **State Management**: Model UI state as sealed interfaces with Loading/Success/Error states
+- **ViewModels**: Transform cold Flows to hot StateFlows using `stateIn`
+- **Compose**: Build all UI with Jetpack Compose
+- **User Interactions**: Pass lambdas to composables, handle in ViewModels
+- Reference implementations in: `/Users/rranganatha/Documents/learn/Android/nowinandroid/feature/`
+
+## Modularization Strategy
+
+### Module Types
+Follow the nowinandroid modularization pattern:
+- **`app` module**: App-level scaffolding, navigation, MainActivity
+- **`feature:*` modules**: Feature-specific UI and ViewModels (no dependencies on other features)
+- **`core:*` modules**: Shared libraries (data, network, database, ui, model, etc.)
+
+### Module Rules
+- **Low Coupling**: Modules should be independent
+- **High Cohesion**: Each module has a single, well-defined responsibility
+- **Feature Isolation**: Feature modules should NEVER depend on other feature modules
+- **Dependency Direction**: `app` → `feature:*` → `core:*`
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/docs/ModularizationLearningJourney.md`
+
+### Convention Plugins
+- Use Gradle convention plugins for build configuration (see `build-logic/convention/`)
+- Create reusable plugins like:
+  - `AndroidApplicationConventionPlugin`
+  - `AndroidLibraryConventionPlugin`
+  - `AndroidFeatureConventionPlugin`
+  - `AndroidApplicationComposeConventionPlugin`
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/build-logic/`
+
+## Technology Stack
+
+### Required Technologies (match nowinandroid)
+- **UI**: Jetpack Compose (100% Compose, no XML layouts)
+- **DI**: Hilt for dependency injection
+- **Networking**: Retrofit + OkHttp
+- **Local DB**: Room
+- **Async**: Kotlin Coroutines + Flow
+- **DataStore**: Proto DataStore for preferences
+- **Navigation**: Compose Navigation
+- **Testing**: JUnit, Compose UI Test, Test Doubles (NO mocking libraries)
+- **Image Loading**: Coil
+
+### Dependency Management
+- Use Gradle Version Catalogs (`gradle/libs.versions.toml`)
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/gradle/libs.versions.toml`
+
+## Code Conventions
+
+### Kotlin Style
+- Follow [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
+- Use immutable data classes for models
+- Prefer `val` over `var`
+- Use sealed interfaces/classes for state modeling
+
+### Naming Conventions
+- **Repositories**: `<Entity>Repository` interface, `OfflineFirst<Entity>Repository` implementation
+- **Use Cases**: `Get<Entity>UseCase`, `<Action><Entity>UseCase`
+- **ViewModels**: `<Screen>ViewModel`
+- **UI State**: `<Screen>UiState`
+- **DAOs**: `<Entity>Dao`
+- **Data Sources**: `<Source>DataSource`
+
+### Package Structure (per module)
+```
+com.byteshop.pixelpost.<module>/
+├── data/           (repositories, data sources)
+├── model/          (data models)
+├── di/             (Hilt modules)
+├── ui/             (Composables)
+├── navigation/     (navigation setup)
+└── viewmodel/      (ViewModels)
+```
+
+## Dependency Injection (Hilt)
+
+### Hilt Guidelines
+- Use `@HiltAndroidApp` on Application class
+- Use `@HiltViewModel` for ViewModels
+- Create separate `@Module` and `@InstallIn` for different components
+- Bind interfaces with `@Binds` (prefer over `@Provides`)
+- Use qualifiers for multiple implementations
+- Reference implementations in: `/Users/rranganatha/Documents/learn/Android/nowinandroid/core/*/src/main/kotlin/**/di/`
+
+## Testing Strategy
+
+### Testing Principles (NO MOCKING)
+- **NO mocking libraries** - Use test doubles instead
+- Implement `Test` versions of repositories with same interface + test hooks
+- Use real DataStore with temporary folders in tests
+- Use real Room database with in-memory database for tests
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/core/testing/`
+
+### Test Types
+- **Unit Tests**: ViewModels with test repositories
+- **Integration Tests**: Repository tests with real data sources
+- **UI Tests**: Compose UI tests with `@HiltAndroidTest`
+- **Screenshot Tests**: Use Roborazzi for visual regression testing
+
+## Compose Best Practices
+
+### Composable Structure
+- Keep composables pure and stateless when possible
+- Hoist state to the appropriate level
+- Use `remember` and `rememberSaveable` appropriately
+- Implement previews for all composables with `@Preview`
+- Create a `designsystem` module for reusable components
+
+### State Management
+- Use `collectAsStateWithLifecycle()` for Flow collection in Compose
+- Model loading/success/error states explicitly
+- Handle all UI states in composables
+
+### Navigation
+- Use type-safe navigation with Navigation Compose
+- Define navigation routes in dedicated navigation files
+- Reference: `/Users/rranganatha/Documents/learn/Android/nowinandroid/app/src/main/kotlin/**/navigation/`
+
+## Performance
+
+### Optimization
+- Generate baseline profiles for release builds
+- Use R8 optimization and ProGuard rules
+- Implement proper caching strategies in repositories
+- Use LazyColumn/LazyRow for lists
+- Monitor Compose recomposition
+
+### Build Performance
+- Leverage Gradle parallel and incremental builds
+- Use build caching
+- Keep modules focused to minimize rebuild scope
+
+## Documentation
+
+### Code Documentation
+- Document all public APIs
+- Add README.md to each module explaining its purpose
+- Keep architecture diagrams updated
+- Reference module READMEs in: `/Users/rranganatha/Documents/learn/Android/nowinandroid/core/*/README.md`
+
+### Comments
+- Write self-documenting code
+- Add comments only when "why" is not obvious
+- Document complex business logic in use cases
+
+## Before Making Suggestions
+
+When I (the AI) am about to suggest:
+1. **Architecture changes**: First check how it's done in `/Users/rranganatha/Documents/learn/Android/nowinandroid/`
+2. **New modules**: Review the modularization strategy and existing modules in nowinandroid
+3. **API implementations**: Look at similar implementations in nowinandroid's `core:network` or `core:data`
+4. **UI patterns**: Check feature modules in nowinandroid for patterns
+5. **Testing approaches**: Review testing strategy in nowinandroid's `core:testing`
+6. **Build configuration**: Refer to convention plugins in nowinandroid's `build-logic`
+
+## Quality Standards
+
+### Before Any Code Submission
+- No linter errors (run Detekt/ktlint)
+- All tests pass
+- Code follows nowinandroid patterns
+- Proper dependency injection setup
+- Documentation updated
+- No hardcoded strings (use resources)
+
+## Forbidden Patterns
+
+❌ **DO NOT**:
+- Use mocking libraries (Mockito, MockK) - use test doubles
+- Create feature-to-feature dependencies
+- Expose internal database models to UI layer
+- Use XML layouts (Compose only)
+- Implement business logic in ViewModels
+- Use `LiveData` (use StateFlow instead)
+- Make synchronous network/database calls
+- Hardcode values that should be configurable
+
+## Remember
+
+> "When in doubt, check nowinandroid first!"
+
+The nowinandroid project is a Google-maintained reference implementation of Android best practices. It should be your primary source of truth for any architectural, API, or implementation decisions in this project.
+

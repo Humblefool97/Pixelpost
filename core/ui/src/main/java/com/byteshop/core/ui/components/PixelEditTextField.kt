@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,18 +44,18 @@ fun PixelEditTextField(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(Color(0xFFFAFAFA))
+            .background(MaterialTheme.colorScheme.background)
             .border(
-                width = 1.dp, color = Color(0xFFDBDBDB), shape = shape
+                width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = shape
             )
             .padding(
                 vertical = 16.dp, horizontal = 12.dp
             ),
         textStyle = TextStyle(
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp
         ),
-        cursorBrush = SolidColor(Color.Black),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         decorationBox = { innerTextField ->
             Box(
@@ -64,7 +65,7 @@ fun PixelEditTextField(
                 if (value.isEmpty()) {
                     Text(
                         text = placeholderString,
-                        color = Color(0xFF999999),
+                        color = Color(MaterialTheme.colorScheme.onSurface.value),
                         fontSize = 14.sp
                     )
                 }

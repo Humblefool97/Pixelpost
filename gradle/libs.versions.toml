@@ -16,6 +16,7 @@ androidxLifecycle = "2.8.7"
 androidxNavigation = "2.8.5"
 # Kotlin
 kotlinxSerializationJson = "1.8.0"
+kotlinxCoroutines = "1.10.1"
 # Firebase
 firebaseBom = "33.7.0"
 firebaseCrashlyticsPlugin = "3.0.2"
@@ -42,6 +43,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 
 # Kotlin libraries
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 
 # Firebase libraries
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }

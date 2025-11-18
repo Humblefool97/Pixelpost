@@ -60,7 +60,7 @@ internal object AuthValidator {
     internal fun validatePassword(password: String): ValidationResult {
         return when {
             password.isEmpty() -> ValidationResult.Error(AuthValidationError.PASSWORD_REQUIRED)
-            password.length < 8 -> ValidationResult.Error(AuthValidationError.PASSWORD_TOO_SHORT)
+            password.length < 6 -> ValidationResult.Error(AuthValidationError.PASSWORD_TOO_SHORT)
             password.length > 30 -> ValidationResult.Error(AuthValidationError.PASSWORD_TOO_LONG)
             else -> ValidationResult.Success
         }
