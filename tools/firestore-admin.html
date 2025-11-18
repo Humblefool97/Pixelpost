@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelpost - Firestore Admin Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .auth-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .button-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .posts-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .post-item {
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+
+        .post-item:hover {
+            transform: translateX(5px);
+            border-color: #667eea;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .post-username {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .carousel-images {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .carousel-images::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-image {
+            min-width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            scroll-snap-align: start;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+        }
+
+        .carousel-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            width: 20px;
+            border-radius: 3px;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #333;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-container:hover .carousel-nav {
+            opacity: 1;
+        }
+
+        .carousel-nav:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .carousel-nav.prev {
+            left: 10px;
+        }
+
+        .carousel-nav.next {
+            right: 10px;
+        }
+
+        .carousel-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .post-caption {
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .view-comments-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 5px 0;
+            text-decoration: underline;
+            width: auto;
+        }
+
+        .view-comments-btn:hover {
+            color: #764ba2;
+        }
+
+        .comments-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e1e8ed;
+            display: none;
+        }
+
+        .comments-section.show {
+            display: block;
+        }
+
+        .comment-wrapper {
+            margin-bottom: 10px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .comment-replies {
+            margin-left: 42px;
+            margin-top: 8px;
+            padding-left: 15px;
+            border-left: 2px solid #e1e8ed;
+        }
+
+        .reply-item {
+            background: #ffffff;
+            border: 1px solid #e1e8ed;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-username {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .comment-likes {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .user-details h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .troubleshooting {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .troubleshooting h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .troubleshooting ol {
+            margin-left: 20px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .troubleshooting a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .troubleshooting code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Pixelpost Admin Tool</h1>
+            <p>Manage your Instagram-like feed data in Firestore</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <div id="login-form">
+                <h2 style="color: #667eea; margin-bottom: 20px;">🔐 Login to Continue</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <button onclick="login()">Sign In</button>
+            </div>
+
+            <div id="user-section" class="hidden">
+                <div class="user-info">
+                    <img id="user-avatar" class="user-avatar" src="https://via.placeholder.com/50" alt="User">
+                    <div class="user-details">
+                        <h3 id="user-name">User Name</h3>
+                        <p id="user-email">user@example.com</p>
+                    </div>
+                    <button onclick="logout()" style="width: auto; margin-left: auto;">Sign Out</button>
+                </div>
+            </div>
+
+            <div id="auth-status" class="status"></div>
+        </div>
+
+        <!-- Troubleshooting Guide -->
+        <div id="troubleshooting" class="troubleshooting hidden">
+            <h3>⚠️ Getting "Permission Denied" Errors?</h3>
+            <p style="margin-bottom: 15px; color: #856404;">Follow these steps to fix Firestore permissions:</p>
+            <ol>
+                <li>
+                    <strong>Go to Firebase Console:</strong> 
+                    <a href="https://console.firebase.google.com/project/pixelpost-3804b/firestore" target="_blank">
+                        Open Firestore Database
+                    </a>
+                </li>
+                <li>
+                    <strong>If Firestore isn't created:</strong> Click "Create database" → Choose "Start in test mode" → Select a region → Enable
+                </li>
+                <li>
+                    <strong>If Firestore exists:</strong> Click the "Rules" tab at the top
+                </li>
+                <li>
+                    <strong>Replace rules with:</strong> Copy this code:
+                    <div style="background: white; padding: 10px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px; overflow-x: auto;">
+rules_version = '2';<br>
+service cloud.firestore {<br>
+&nbsp;&nbsp;match /databases/{database}/documents {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if request.auth != null;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+                    </div>
+                </li>
+                <li>
+                    <strong>Publish:</strong> Click "Publish" button in Firebase Console
+                </li>
+                <li>
+                    <strong>Wait 30 seconds</strong> for rules to propagate, then refresh this page and try again
+                </li>
+            </ol>
+            <p style="margin-top: 15px; color: #856404;">
+                <strong>📄 Note:</strong> You can also find these rules in <code>tools/firestore-test.rules</code>
+            </p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-app" class="hidden">
+            <div class="main-content">
+                <!-- Create Post Form -->
+                <div class="card">
+                    <h2>✨ Create New Post</h2>
+                    
+                    <div id="post-status" class="status"></div>
+
+                    <div class="button-group">
+                        <button class="button-secondary" onclick="generateRandomPost()">🎲 Generate Random</button>
+                        <button class="button-success" onclick="addBulkPosts()">📦 Add 10 Posts</button>
+                    </div>
+
+                    <form id="post-form" onsubmit="createPost(event)">
+                        <div class="form-group">
+                            <label>Image URLs (one per line for carousel)</label>
+                            <textarea id="imageUrls" placeholder="https://picsum.photos/400/600?random=1
+https://picsum.photos/400/600?random=2
+https://picsum.photos/400/600?random=3" rows="4"></textarea>
+                            <small style="color: #666; font-size: 12px;">
+                                💡 Add multiple URLs for carousel posts, or just one for single image
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Caption</label>
+                            <textarea id="caption" placeholder="Write a caption..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="location" placeholder="San Francisco, CA">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Initial Likes Count</label>
+                            <input type="number" id="likesCount" value="0" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Initial Comments Count</label>
+                            <input type="number" id="commentsCount" value="0" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Initial Share Count</label>
+                            <input type="number" id="shareCount" value="0" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="addSampleComments" checked>
+                                Add sample comments (3 comments with possible replies)
+                            </label>
+                        </div>
+
+                        <button type="submit">Create Post</button>
+                    </form>
+                </div>
+
+                <!-- Posts List -->
+                <div class="card">
+                    <h2>📱 Recent Posts</h2>
+                    <div id="posts-status" class="status"></div>
+                    <div id="posts-list" class="posts-list">
+                        <p style="text-align: center; color: #999;">Loading posts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration - from your google-services.json
+        const firebaseConfig = {
+            apiKey: "AIzaSyAekVzzKL2J6tyalKQ3tU_Hwpu1N1aoxTM",
+            authDomain: "pixelpost-3804b.firebaseapp.com",
+            projectId: "pixelpost-3804b",
+            storageBucket: "pixelpost-3804b.firebasestorage.app",
+            messagingSenderId: "1051075957143",
+            appId: "1:1051075957143:android:c5973c4aaec3eec25f74d2"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make available globally
+        window.auth = auth;
+        window.db = db;
+        window.firestore = { addDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp, doc, updateDoc };
+        window.authFunctions = { signInWithEmailAndPassword, signOut };
+
+        // Sample data generators
+        window.sampleCaptions = [
+            "Beautiful sunset! 🌅",
+            "Coffee time ☕",
+            "Living my best life ✨",
+            "Exploring the city 🏙️",
+            "Weekend vibes 🎉",
+            "Nature therapy 🌲",
+            "Good times with great people 💫",
+            "Making memories 📸",
+            "Chasing dreams 🌟",
+            "Simply happy 😊",
+            "Adventure awaits 🗺️",
+            "Grateful for today 🙏",
+            "Foodie life 🍕",
+            "Fitness goals 💪",
+            "Travel mode activated ✈️",
+            "Art appreciation 🎨",
+            "Music & chill 🎵",
+            "Book lover 📚",
+            "Pet love 🐾",
+            "Home sweet home 🏠"
+        ];
+
+        window.sampleLocations = [
+            "San Francisco, CA",
+            "New York, NY",
+            "Los Angeles, CA",
+            "Chicago, IL",
+            "Miami, FL",
+            "Seattle, WA",
+            "Austin, TX",
+            "Boston, MA",
+            "Denver, CO",
+            "Portland, OR",
+            "Paris, France",
+            "London, UK",
+            "Tokyo, Japan",
+            "Sydney, Australia",
+            "Barcelona, Spain",
+            "Amsterdam, Netherlands",
+            "Dubai, UAE",
+            "Singapore",
+            "Rome, Italy",
+            "Bali, Indonesia"
+        ];
+
+        window.sampleComments = [
+            "This is amazing! 😍",
+            "Love this! ❤️",
+            "So beautiful!",
+            "Great shot! 📸",
+            "Incredible! 🔥",
+            "Wow! 🤩",
+            "Perfect! ✨",
+            "Goals! 💯",
+            "Stunning! 😊",
+            "Awesome! 👏",
+            "Can't stop looking at this! 😱",
+            "This made my day! ☀️",
+            "Absolutely gorgeous! 💕",
+            "Need to visit here! 🗺️",
+            "Beautiful colors! 🎨",
+            "This is epic! 🚀",
+            "Living for this! 💫",
+            "So good! 👌",
+            "Obsessed! 😍",
+            "Pure perfection! ⭐"
+        ];
+        
+        window.sampleReplies = [
+            "I totally agree!",
+            "Thanks! 💕",
+            "Right?! 😊",
+            "So true!",
+            "Couldn't have said it better!",
+            "Exactly my thoughts!",
+            "Thank you so much! 🙏",
+            "You're so sweet! ❤️",
+            "Appreciate it!",
+            "Glad you like it! ✨",
+            "Thanks for the love! 💫",
+            "That means a lot! 😊",
+            "You're the best! 🙌",
+            "Much appreciated! 🔥",
+            "Thank you! 😍",
+            "You get it! 💯",
+            "Absolutely! 👏",
+            "For real! 😄",
+            "100%! ⭐",
+            "Same here! 💕"
+        ];
+
+        window.sampleUsernames = [
+            "sarah_johnson", "mike_photography", "emma_travels", "alex_foodie",
+            "lisa_fitness", "john_adventures", "kate_lifestyle", "david_art",
+            "sophia_beauty", "ryan_tech", "olivia_fashion", "james_music",
+            "ava_wellness", "noah_outdoors", "isabella_creative", "mason_chef",
+            "mia_wanderlust", "ethan_sports", "charlotte_books", "liam_design"
+        ];
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                showUserSection(user);
+                loadPosts();
+            } else {
+                showLoginForm();
+            }
+        });
+
+        function showUserSection(user) {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('user-section').classList.remove('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            document.getElementById('user-name').textContent = user.displayName || 'User';
+            document.getElementById('user-email').textContent = user.email;
+            if (user.photoURL) {
+                document.getElementById('user-avatar').src = user.photoURL;
+            }
+        }
+
+        function showLoginForm() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('user-section').classList.add('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        window.showUserSection = showUserSection;
+        window.showLoginForm = showLoginForm;
+        window.loadPosts = loadPosts;
+
+        async function loadPosts() {
+            try {
+                const postsQuery = query(
+                    collection(db, 'posts'),
+                    orderBy('createdAt', 'desc'),
+                    limit(20)
+                );
+                
+                const querySnapshot = await getDocs(postsQuery);
+                const postsList = document.getElementById('posts-list');
+                
+                if (querySnapshot.empty) {
+                    postsList.innerHTML = '<p style="text-align: center; color: #999;">No posts yet. Create your first post!</p>';
+                    return;
+                }
+                
+                postsList.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const post = doc.data();
+                    const postElement = createPostElement(doc.id, post);
+                    postsList.appendChild(postElement);
+                });
+                
+                showStatus('posts-status', 'success', `Loaded ${querySnapshot.size} posts`);
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                const errorMessage = error.message || error.toString();
+                
+                // Check if it's a permission error
+                if (errorMessage.includes('permission') || errorMessage.includes('PERMISSION_DENIED') || errorMessage.includes('indexes?create_composite')) {
+                    showStatus('posts-status', 'error', `Permission Error: ${errorMessage}`);
+                    document.getElementById('troubleshooting').classList.remove('hidden');
+                } else {
+                    showStatus('posts-status', 'error', `Error loading posts: ${errorMessage}`);
+                }
+            }
+        }
+
+        // Load comments and replies for a post
+        async function loadCommentsForPost(postId, commentsContainer) {
+            try {
+                console.log(`Loading comments for post: ${postId}`);
+                
+                // Get all comments for this post (both top-level and replies)
+                const commentsQuery = window.firestore.query(
+                    window.firestore.collection(window.db, 'comments'),
+                    window.firestore.where('postId', '==', postId),
+                    window.firestore.orderBy('createdAt', 'asc')
+                );
+                
+                const querySnapshot = await window.firestore.getDocs(commentsQuery);
+                
+                console.log(`Found ${querySnapshot.size} comments for post ${postId}`);
+                
+                if (querySnapshot.empty) {
+                    commentsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 15px;">
+                            <p style="color: #999; font-size: 13px; margin-bottom: 10px;">
+                                No comments found for this post
+                            </p>
+                            <p style="color: #ccc; font-size: 11px; margin-bottom: 10px;">
+                                Post ID: <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">${postId}</code>
+                            </p>
+                            <a href="https://console.firebase.google.com/project/pixelpost-3804b/firestore/data/~2Fcomments" 
+                               target="_blank"
+                               style="display: inline-block; color: #667eea; text-decoration: underline; font-size: 12px;">
+                                🔍 Check Firebase Console
+                            </a>
+                            <p style="color: #999; font-size: 11px; margin-top: 10px;">
+                                💡 Tip: Try creating a new post with "Add sample comments" checked
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Separate top-level comments and replies
+                const topLevelComments = [];
+                const replies = {};
+                
+                querySnapshot.forEach((doc) => {
+                    const comment = { id: doc.id, ...doc.data() };
+                    
+                    if (comment.parentCommentId) {
+                        // This is a reply
+                        if (!replies[comment.parentCommentId]) {
+                            replies[comment.parentCommentId] = [];
+                        }
+                        replies[comment.parentCommentId].push(comment);
+                    } else {
+                        // This is a top-level comment
+                        topLevelComments.push(comment);
+                    }
+                });
+                
+                // Build the comments HTML
+                commentsContainer.innerHTML = '';
+                topLevelComments.forEach((comment) => {
+                    const commentReplies = replies[comment.id] || [];
+                    const commentElement = createCommentElement(comment, commentReplies);
+                    commentsContainer.appendChild(commentElement);
+                });
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                const errorMessage = error.message || error.toString();
+                
+                // Check if it's an index error
+                if (errorMessage.includes('index') || errorMessage.includes('create_composite')) {
+                    // Extract the URL from the error message if present
+                    const urlMatch = errorMessage.match(/(https:\/\/console\.firebase\.google\.com[^\s)]+)/);
+                    const indexUrl = urlMatch ? urlMatch[1] : 'https://console.firebase.google.com/project/pixelpost-3804b/firestore/indexes';
+                    
+                    commentsContainer.innerHTML = `
+                        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                            <h4 style="color: #856404; margin: 0 0 10px 0;">📊 Index Required</h4>
+                            <p style="color: #856404; font-size: 13px; margin-bottom: 10px;">
+                                Firestore needs a composite index to load comments efficiently.
+                            </p>
+                            <a href="${indexUrl}" target="_blank" 
+                               style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                      color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; 
+                                      font-weight: 600; font-size: 13px;">
+                                🔧 Create Index (Auto-setup)
+                            </a>
+                            <p style="color: #856404; font-size: 12px; margin-top: 10px;">
+                                Click the button above → It will open Firebase Console → Click "Create Index" → Wait 1-2 minutes → Refresh this page
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    commentsContainer.innerHTML = `<p style="color: #f5576c; font-size: 13px; padding: 10px;">Failed to load comments: ${errorMessage}</p>`;
+                }
+            }
+        }
+        
+        // Create a comment element with optional replies
+        function createCommentElement(comment, replies = []) {
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment-wrapper';
+            
+            const replyCount = replies.length;
+            const replyText = replyCount > 0 ? `${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}` : '';
+            
+            commentDiv.innerHTML = `
+                <div class="comment-item">
+                    <img class="comment-avatar" src="${comment.userProfileImageUrl || 'https://via.placeholder.com/32'}" alt="${comment.userName}">
+                    <div class="comment-content">
+                        <div class="comment-username">${comment.userName}</div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-likes">
+                            ❤️ ${comment.likesCount || 0} likes
+                            ${replyCount > 0 ? `<span style="margin-left: 10px;">💬 ${replyText}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                ${replies.length > 0 ? `
+                    <div class="comment-replies">
+                        ${replies.map(reply => `
+                            <div class="comment-item reply-item">
+                                <img class="comment-avatar" src="${reply.userProfileImageUrl || 'https://via.placeholder.com/32'}" alt="${reply.userName}">
+                                <div class="comment-content">
+                                    <div class="comment-username">${reply.userName}</div>
+                                    <div class="comment-text">${reply.text}</div>
+                                    <div class="comment-likes">❤️ ${reply.likesCount || 0} likes</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+            
+            return commentDiv;
+        }
+
+        function createPostElement(id, post) {
+            const div = document.createElement('div');
+            div.className = 'post-item';
+            
+            const createdAt = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
+            const commentsId = `comments-${id}`;
+            const carouselId = `carousel-${id}`;
+            
+            // Determine if this is a carousel post
+            const imageUrls = post.imageUrls || (post.imageUrl ? [post.imageUrl] : []);
+            const isCarousel = imageUrls.length > 1;
+            
+            // Build images HTML
+            let imagesHTML = '';
+            if (isCarousel) {
+                imagesHTML = `
+                    <div class="carousel-container" id="${carouselId}">
+                        <div class="carousel-images" id="${carouselId}-images">
+                            ${imageUrls.map((url, index) => 
+                                `<img class="carousel-image" src="${url}" alt="Post image ${index + 1}" loading="lazy">`
+                            ).join('')}
+                        </div>
+                        <button class="carousel-nav prev" onclick="navigateCarousel('${carouselId}', -1')">‹</button>
+                        <button class="carousel-nav next" onclick="navigateCarousel('${carouselId}', 1')">›</button>
+                        <div class="carousel-count">1/${imageUrls.length}</div>
+                        <div class="carousel-indicators">
+                            ${imageUrls.map((_, index) => 
+                                `<div class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (imageUrls.length === 1) {
+                imagesHTML = `<img class="post-image" src="${imageUrls[0]}" alt="Post image" loading="lazy">`;
+            }
+            
+            div.innerHTML = `
+                <div class="post-header">
+                    <img class="post-avatar" src="${post.userProfileImageUrl || 'https://via.placeholder.com/40'}" alt="${post.userName}">
+                    <div>
+                        <div class="post-username">${post.userName}</div>
+                        <div style="font-size: 12px; color: #999;">${post.location || 'Unknown location'}</div>
+                    </div>
+                </div>
+                ${imagesHTML}
+                ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
+                <div class="post-stats">
+                    <span>❤️ ${post.likesCount || 0} likes</span>
+                    <span>💬 ${post.commentsCount || 0} comments</span>
+                    <span>🔗 ${post.shareCount || 0} shares</span>
+                    ${isCarousel ? `<span>📸 ${imageUrls.length} photos</span>` : ''}
+                    <span>📅 ${createdAt}</span>
+                </div>
+                ${(post.commentsCount || 0) > 0 ? `
+                    <button class="view-comments-btn" onclick="toggleComments('${commentsId}', '${id}')">
+                        View all ${post.commentsCount} comments
+                    </button>
+                    <div id="${commentsId}" class="comments-section">
+                        <p style="text-align: center; color: #999; font-size: 13px;">Loading comments...</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            // Setup carousel scroll listener if it's a carousel
+            if (isCarousel) {
+                setTimeout(() => {
+                    setupCarouselScroll(carouselId);
+                }, 100);
+            }
+            
+            return div;
+        }
+        
+        // Setup carousel scroll detection
+        function setupCarouselScroll(carouselId) {
+            const container = document.getElementById(`${carouselId}-images`);
+            if (!container) return;
+            
+            container.addEventListener('scroll', () => {
+                const scrollLeft = container.scrollLeft;
+                const imageWidth = container.querySelector('.carousel-image')?.offsetWidth || 0;
+                const currentIndex = Math.round(scrollLeft / imageWidth);
+                
+                // Update indicators
+                const indicators = document.querySelectorAll(`#${carouselId} .carousel-dot`);
+                indicators.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+                
+                // Update count
+                const countEl = document.querySelector(`#${carouselId} .carousel-count`);
+                if (countEl) {
+                    countEl.textContent = `${currentIndex + 1}/${indicators.length}`;
+                }
+            });
+        }
+        
+        // Navigate carousel
+        window.navigateCarousel = function(carouselId, direction) {
+            const container = document.getElementById(`${carouselId}-images`);
+            if (!container) return;
+            
+            const imageWidth = container.querySelector('.carousel-image')?.offsetWidth || 0;
+            const currentScroll = container.scrollLeft;
+            const currentIndex = Math.round(currentScroll / imageWidth);
+            const newIndex = Math.max(0, Math.min(currentIndex + direction, container.children.length - 1));
+            
+            container.scrollTo({
+                left: newIndex * imageWidth,
+                behavior: 'smooth'
+            });
+        };
+
+        // Toggle comments visibility
+        window.toggleComments = async function(commentsId, postId) {
+            const commentsSection = document.getElementById(commentsId);
+            
+            if (commentsSection.classList.contains('show')) {
+                commentsSection.classList.remove('show');
+            } else {
+                commentsSection.classList.add('show');
+                // Load comments if not already loaded
+                if (commentsSection.querySelector('p')) {
+                    await loadCommentsForPost(postId, commentsSection);
+                }
+            }
+        };
+
+        window.createPostElement = createPostElement;
+        window.loadCommentsForPost = loadCommentsForPost;
+    </script>
+
+    <script>
+        // Login function
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showStatus('auth-status', 'error', 'Please enter email and password');
+                return;
+            }
+
+            try {
+                showStatus('auth-status', 'info', 'Signing in...');
+                await window.authFunctions.signInWithEmailAndPassword(window.auth, email, password);
+                showStatus('auth-status', 'success', 'Successfully signed in!');
+            } catch (error) {
+                showStatus('auth-status', 'error', `Login failed: ${error.message}`);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await window.authFunctions.signOut(window.auth);
+                showStatus('auth-status', 'success', 'Signed out successfully');
+            } catch (error) {
+                showStatus('auth-status', 'error', `Logout failed: ${error.message}`);
+            }
+        }
+
+        // Helper function to create sample comments with optional replies
+        async function createSampleComments(postId, count = 3) {
+            const createdComments = [];
+            let totalCommentsCreated = 0;
+            
+            console.log(`Creating ${count} comments for post ${postId}`);
+            
+            // Create top-level comments first
+            for (let i = 0; i < count; i++) {
+                const randomUsername = window.sampleUsernames[Math.floor(Math.random() * window.sampleUsernames.length)];
+                const randomComment = window.sampleComments[Math.floor(Math.random() * window.sampleComments.length)];
+                const randomLikes = Math.floor(Math.random() * 50);
+                
+                const comment = {
+                    postId: postId,
+                    userId: `user_${Math.random().toString(36).substr(2, 9)}`,
+                    userName: randomUsername,
+                    userProfileImageUrl: `https://i.pravatar.cc/150?u=${randomUsername}`,
+                    text: randomComment,
+                    createdAt: window.firestore.serverTimestamp(),
+                    likesCount: randomLikes,
+                    parentCommentId: null // Top-level comment
+                };
+                
+                const docRef = await window.firestore.addDoc(
+                    window.firestore.collection(window.db, 'comments'),
+                    comment
+                );
+                
+                totalCommentsCreated++;
+                console.log(`Created comment ${docRef.id} for post ${postId}`);
+                createdComments.push({ id: docRef.id, ...comment });
+            }
+            
+            // Add replies to some comments (40% chance per comment)
+            for (const parentComment of createdComments) {
+                const shouldAddReply = Math.random() < 0.4;
+                
+                if (shouldAddReply) {
+                    // Add 1-2 replies to this comment
+                    const replyCount = Math.floor(Math.random() * 2) + 1;
+                    
+                    for (let j = 0; j < replyCount; j++) {
+                        const randomUsername = window.sampleUsernames[Math.floor(Math.random() * window.sampleUsernames.length)];
+                        const randomReply = window.sampleReplies[Math.floor(Math.random() * window.sampleReplies.length)];
+                        const randomLikes = Math.floor(Math.random() * 30);
+                        
+                        const reply = {
+                            postId: postId,
+                            userId: `user_${Math.random().toString(36).substr(2, 9)}`,
+                            userName: randomUsername,
+                            userProfileImageUrl: `https://i.pravatar.cc/150?u=${randomUsername}`,
+                            text: randomReply,
+                            createdAt: window.firestore.serverTimestamp(),
+                            likesCount: randomLikes,
+                            parentCommentId: parentComment.id // Reference to parent comment
+                        };
+                        
+                        await window.firestore.addDoc(
+                            window.firestore.collection(window.db, 'comments'),
+                            reply
+                        );
+                        totalCommentsCreated++;
+                    }
+                }
+            }
+            
+            console.log(`Total comments created for post ${postId}: ${totalCommentsCreated}`);
+            
+            // Update the post's commentsCount to match actual comments created
+            try {
+                await window.firestore.updateDoc(
+                    window.firestore.doc(window.db, 'posts', postId),
+                    { commentsCount: totalCommentsCreated }
+                );
+                console.log(`Updated post ${postId} commentsCount to ${totalCommentsCreated}`);
+            } catch (error) {
+                console.error(`Failed to update commentsCount for post ${postId}:`, error);
+            }
+            
+            return { comments: createdComments, totalCount: totalCommentsCreated };
+        }
+
+        // Create post function
+        async function createPost(event) {
+            event.preventDefault();
+            
+            const user = window.auth.currentUser;
+            if (!user) {
+                showStatus('post-status', 'error', 'You must be logged in to create posts');
+                return;
+            }
+
+            const imageUrlsText = document.getElementById('imageUrls').value.trim();
+            const imageUrls = imageUrlsText.split('\n')
+                .map(url => url.trim())
+                .filter(url => url.length > 0);
+            
+            if (imageUrls.length === 0) {
+                showStatus('post-status', 'error', 'Please add at least one image URL');
+                return;
+            }
+
+            const caption = document.getElementById('caption').value;
+            const location = document.getElementById('location').value;
+            const likesCount = parseInt(document.getElementById('likesCount').value) || 0;
+            const commentsCount = parseInt(document.getElementById('commentsCount').value) || 0;
+            const shareCount = parseInt(document.getElementById('shareCount').value) || 0;
+            const addComments = document.getElementById('addSampleComments').checked;
+
+            const post = {
+                userId: user.uid,
+                userName: user.displayName || user.email.split('@')[0],
+                userProfileImageUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+                imageUrls: imageUrls, // Array of image URLs
+                imageUrl: imageUrls[0], // Keep first image for backward compatibility
+                caption: caption || null,
+                location: location || null,
+                createdAt: window.firestore.serverTimestamp(),
+                likesCount: likesCount,
+                commentsCount: commentsCount,
+                shareCount: shareCount,
+                shareUrl: null, // Will be set when post is shared
+                isCarousel: imageUrls.length > 1 // Flag to indicate carousel post
+            };
+
+            try {
+                showStatus('post-status', 'info', 'Creating post...');
+                const docRef = await window.firestore.addDoc(
+                    window.firestore.collection(window.db, 'posts'),
+                    post
+                );
+                
+                // Create sample comments if checkbox is checked
+                if (addComments) {
+                    await createSampleComments(docRef.id, 3);
+                }
+                
+                showStatus('post-status', 'success', `Post created successfully! ID: ${docRef.id}${addComments ? ' (with comments & possible replies)' : ''}`);
+                document.getElementById('post-form').reset();
+                document.getElementById('addSampleComments').checked = true; // Reset to checked
+                document.getElementById('troubleshooting').classList.add('hidden');
+                await window.loadPosts();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                const errorMessage = error.message || error.toString();
+                
+                // Check if it's a permission error
+                if (errorMessage.includes('permission') || errorMessage.includes('PERMISSION_DENIED')) {
+                    showStatus('post-status', 'error', `Permission Error: ${errorMessage}`);
+                    document.getElementById('troubleshooting').classList.remove('hidden');
+                    document.getElementById('troubleshooting').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    showStatus('post-status', 'error', `Error creating post: ${errorMessage}`);
+                }
+            }
+        }
+
+        // Generate random post
+        function generateRandomPost() {
+            const randomCaption = window.sampleCaptions[Math.floor(Math.random() * window.sampleCaptions.length)];
+            const randomLocation = window.sampleLocations[Math.floor(Math.random() * window.sampleLocations.length)];
+            const randomLikes = Math.floor(Math.random() * 500);
+            const randomComments = Math.floor(Math.random() * 50);
+            const randomShares = Math.floor(Math.random() * 100);
+
+            // 40% chance of carousel (2-5 images)
+            const isCarousel = Math.random() < 0.4;
+            const imageCount = isCarousel ? Math.floor(Math.random() * 4) + 2 : 1; // 2-5 images for carousel
+            const baseId = Math.floor(Math.random() * 1000);
+            
+            const imageUrls = [];
+            for (let i = 0; i < imageCount; i++) {
+                imageUrls.push(`https://picsum.photos/400/600?random=${baseId + i}`);
+            }
+
+            document.getElementById('imageUrls').value = imageUrls.join('\n');
+            document.getElementById('caption').value = randomCaption;
+            document.getElementById('location').value = randomLocation;
+            document.getElementById('likesCount').value = randomLikes;
+            document.getElementById('commentsCount').value = randomComments;
+            document.getElementById('shareCount').value = randomShares;
+            document.getElementById('addSampleComments').checked = true;
+
+            const postType = isCarousel ? `carousel (${imageCount} images)` : 'single image';
+            showStatus('post-status', 'success', `Random ${postType} data generated! Review and click Create Post.`);
+        }
+
+        // Add bulk posts
+        async function addBulkPosts() {
+            const user = window.auth.currentUser;
+            if (!user) {
+                showStatus('post-status', 'error', 'You must be logged in to create posts');
+                return;
+            }
+
+            if (!confirm('This will create 10 random posts. Some will have comments with nested replies, some won\'t. Continue?')) {
+                return;
+            }
+
+            showStatus('post-status', 'info', 'Creating 10 posts (with varied comments)...');
+
+            try {
+                for (let i = 0; i < 10; i++) {
+                    const randomCaption = window.sampleCaptions[Math.floor(Math.random() * window.sampleCaptions.length)];
+                    const randomLocation = window.sampleLocations[Math.floor(Math.random() * window.sampleLocations.length)];
+                    const randomLikes = Math.floor(Math.random() * 500);
+                    const randomComments = Math.floor(Math.random() * 50);
+                    const randomShares = Math.floor(Math.random() * 100);
+
+                    // 40% chance of carousel (2-5 images)
+                    const isCarousel = Math.random() < 0.4;
+                    const imageCount = isCarousel ? Math.floor(Math.random() * 4) + 2 : 1;
+                    const baseId = Math.floor(Math.random() * 1000) + Date.now() + i * 100;
+                    
+                    const imageUrls = [];
+                    for (let j = 0; j < imageCount; j++) {
+                        imageUrls.push(`https://picsum.photos/400/600?random=${baseId + j}`);
+                    }
+
+                    const post = {
+                        userId: user.uid,
+                        userName: user.displayName || user.email.split('@')[0],
+                        userProfileImageUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+                        imageUrls: imageUrls,
+                        imageUrl: imageUrls[0], // First image for backward compatibility
+                        caption: randomCaption,
+                        location: randomLocation,
+                        createdAt: window.firestore.serverTimestamp(),
+                        likesCount: randomLikes,
+                        commentsCount: randomComments,
+                        shareCount: randomShares,
+                        shareUrl: null,
+                        isCarousel: imageUrls.length > 1
+                    };
+
+                    // Create post first
+                    const docRef = await window.firestore.addDoc(
+                        window.firestore.collection(window.db, 'posts'),
+                        post
+                    );
+                    
+                    // Then create 0-4 comments for each post (30% chance of no comments)
+                    const shouldHaveComments = Math.random() > 0.3;
+                    if (shouldHaveComments) {
+                        const commentCount = Math.floor(Math.random() * 3) + 2; // 2-4 comments
+                        await createSampleComments(docRef.id, commentCount);
+                    }
+                    
+                    showStatus('post-status', 'info', `Created ${i + 1}/10 posts...`);
+                }
+
+                showStatus('post-status', 'success', '10 posts created successfully (some with comments & replies)!');
+                document.getElementById('troubleshooting').classList.add('hidden');
+                await window.loadPosts();
+            } catch (error) {
+                console.error('Error creating bulk posts:', error);
+                const errorMessage = error.message || error.toString();
+                
+                // Check if it's a permission error
+                if (errorMessage.includes('permission') || errorMessage.includes('PERMISSION_DENIED')) {
+                    showStatus('post-status', 'error', `Permission Error: ${errorMessage}`);
+                    document.getElementById('troubleshooting').classList.remove('hidden');
+                    document.getElementById('troubleshooting').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    showStatus('post-status', 'error', `Error creating posts: ${errorMessage}`);
+                }
+            }
+        }
+
+        // Show status message
+        function showStatus(elementId, type, message) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = message;
+            
+            if (type !== 'info') {
+                setTimeout(() => {
+                    statusEl.className = 'status';
+                }, 5000);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                generateRandomPost();
+            }
+        });
+    </script>
+</body>
+</html>
+
