@@ -52,6 +52,7 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-auth = {group = "com.google.firebase",name = "firebase-auth"}
+firebase-firestore = {group = "com.google.firebase",name = "firebase-firestore"}
 
 # Gradle plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -81,4 +82,5 @@ pixelpost-android-application-compose = { id = "pixelpost.android.application.co
 pixelpost-android-library-compose = { id = "pixelpost.android.library.compose", version = "unspecified" }
 pixelpost-android-application-firebase = { id = "pixelpost.android.application.firebase", version = "unspecified" }
 pixelpost-android-firebase-auth = { id = "pixelpost.android.firebase.auth", version = "unspecified" }
+pixelpost-android-firebase-firestore = { id = "pixelpost.android.firebase.firestore", version = "unspecified" }
 pixelpost-kotlin-parcelize = { id = "pixelpost.kotlin.parcelize", version = "unspecified" }

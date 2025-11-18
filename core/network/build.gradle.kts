@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     id("pixelpost.android.firebase.auth")
+    id("pixelpost.android.firebase.firestore")
 }
 
 android {

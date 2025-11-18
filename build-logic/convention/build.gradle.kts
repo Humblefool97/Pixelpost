@@ -82,6 +82,10 @@ gradlePlugin {
             id = "pixelpost.android.firebase.auth"
             implementationClass = "AndroidFirebaseAuthConventionPlugin"
         }
+        register("androidFirebaseFirestore") {
+            id = "pixelpost.android.firebase.firestore"
+            implementationClass = "AndroidFirebaseFirestoreConventionPlugin"
+        }
         register("kotlinParcelize") {
             id = "pixelpost.kotlin.parcelize"
             implementationClass = "KotlinParcelizeConventionPlugin"
